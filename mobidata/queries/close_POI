@@ -1,0 +1,19 @@
+﻿
+WITH close_POI AS
+	(WITH candidate_set AS ( SELECT nome, location,
+	ST_Distance(ST_MakePoint(longitude,latitude),
+	ST_MakePoint(-73.99,40.74))*100000 AS cart_distance
+	FROM "POIs"."POIsManhattan"
+	ORDER BY cart_distance limit 1) 
+	SELECT
+	nome,ST_Distance(P.location,
+	ST_GeographyFromText( 'POINT(-73.99 40.74)')) AS
+	geo_distance
+	FROM candidate_set as P
+	ORDER BY geo_distance 
+	limit 1	
+) SELECT concat(location)
+from "POIs"."Checkins4sqManhattan" as c NATURAL INNER JOIN close_POI as p 
+GROUP BY location
+
+limit 100;
