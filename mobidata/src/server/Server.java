@@ -23,9 +23,7 @@ import org.postgresql.Driver;
 public class Server {
 	
 	
-	@GET
-	@Path("/")
-	@Produces(MediaType.APPLICATION_JSON)
+
 	private Response QueryToJSONResponse(String query){
 		try {
 			 
@@ -62,10 +60,12 @@ public class Server {
 		}
 		
 }
-	
-	public Response view(){
+	@POST
+	@Path("/")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response listRoutes(){
 		
-		return QueryToJSONResponse("\n" + 
+		/*return QueryToJSONResponse("\n" + 
 						"WITH close_POI AS\n" + 
 						"	(WITH candidate_set AS ( SELECT nome, location,\n" + 
 						"	ST_Distance(ST_MakePoint(longitude,latitude),\n" + 
@@ -83,13 +83,14 @@ public class Server {
 						"from \"POIs\".\"Checkins4sqManhattan\" as c NATURAL INNER JOIN close_POI as p \n" + 
 						"GROUP BY location\n" + 
 						"\n" + 
-						"limit 100;");
+						"limit 100;");*/
+		return QueryToJSONResponse("select * from \"POIs\".\"POIsManhattan\" limit 5");
 	}
 	
 	public static String convertToJSON(ResultSet resultSet)
 			throws Exception {
 			JSONArray jsonArray = new JSONArray();
-			while (resultSet.next()) {
+			while (resultSet.next()) {	
 			int total_rows = resultSet.getMetaData().getColumnCount();
 			JSONObject obj = new JSONObject();
 			for (int i = 0; i < total_rows; i++) {

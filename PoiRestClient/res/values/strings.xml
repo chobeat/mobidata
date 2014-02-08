@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Poi Rest Client</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="firstName">Keyword:</string>
+    <string name="retrieve">Get POIs</string>
+    <string name="kValue"># of POIs:</string>
+    <string name="lon">Longitude: </string>
+    <string name="lat">Latitude: </string>
+    <string name="unk">unknown</string>
+    <string name="prov">Provider: </string>
+    <string name="none">none</string>
+
+    <string-array name="kValue_array">
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+
+    <string name="title_activity_poi_map">Map of POIs</string>
+    <string name="showMap">Show map</string>
+    <string name="title_activity_poi_list">List of POIs</string>
+    <string name="showPOIMap">Show POIs on Map</string>
+
+</resources>

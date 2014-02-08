@@ -1,0 +1,168 @@
+
+<TableLayout android:id="@+id/tableLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:shrinkColumns="*"
+    android:stretchColumns="*" xmlns:android="http://schemas.android.com/apk/res/android">
+
+     <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+     
+        <TextView
+            android:id="@+id/tvProv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"            
+            android:text="@string/prov" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvProvVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:text="@string/none" >
+        </TextView>     
+        
+     </TableRow>   
+     
+     
+     <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+     
+        <TextView
+            android:id="@+id/tvLat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:text="@string/lat" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvLatVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:text="@string/unk" >
+        </TextView>     
+        
+     </TableRow>   
+     
+     
+     <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >          
+
+        <TextView
+            android:id="@+id/tvLog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:text="@string/lon">
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvLonVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:text="@string/unk" >
+        </TextView>
+
+     </TableRow>  
+
+
+     <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+	    <TextView
+	        android:id="@+id/tvKvalue"
+	        style=""
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" 	        
+	        android:text="@string/kValue" >
+
+		</TextView>
+
+	    <Spinner
+    	    android:id="@+id/kValueSpinner"
+        	android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
+
+    </TableRow>
+    
+    
+ 
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+ 
+        <TextView
+            style=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:text="@string/firstName" >
+        </TextView>
+ 
+        <EditText
+            android:id="@+id/etKeyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords"
+            android:textSize="22dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"             
+            android:layout_span="2" />
+    </TableRow>
+ 
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+ 
+        <Button
+            android:id="@+id/bn_retrieve"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="retrievePOI"
+            android:text="@string/retrieve" />
+        
+        <Button
+            android:id="@+id/bn_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="showMap"
+            android:text="@string/showMap" /> 
+        <Button
+            android:id="@+id/bn_mapPOI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="showPOIMap"
+            android:text="@string/showPOIMap" /> 
+    </TableRow>
+ 
+</TableLayout>
