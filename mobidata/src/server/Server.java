@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -18,8 +19,9 @@ import java.sql.Statement;
 
 import org.postgresql.Driver;
 
+import com.sun.org.glassfish.gmbal.ParameterNames;
 
-@Path("/poi")
+@Path("/")
 public class Server {
 	
 	
@@ -61,10 +63,12 @@ public class Server {
 		
 }
 	@POST
-	@Path("/")
+	@Path("close")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response listRoutes(){
-		
+	public Response listRoutes( MultivaluedMap<String, String> params){
+		String lat=params.getFirst("lat");
+		String lng=params.getFirst("lng");
 		/*return QueryToJSONResponse("\n" + 
 						"WITH close_POI AS\n" + 
 						"	(WITH candidate_set AS ( SELECT nome, location,\n" + 
@@ -84,7 +88,13 @@ public class Server {
 						"GROUP BY location\n" + 
 						"\n" + 
 						"limit 100;");*/
-		return QueryToJSONResponse("select * from \"POIs\".\"POIsManhattan\" limit 5");
+		String query="SELECT * FROM (SELECT *," + 
+				"	ST_Distance(ST_MakePoint(latitude,longitude)," + 
+				"	ST_MakePoint("+lat+","+lng+")) AS cart_distance" + 
+				"	FROM \"POIs\".\"POIsManhattan\"" + 
+				"	ORDER BY cart_distance limit 35) AS T1 ORDER BY nome";;
+		System.out.println(query);
+		return QueryToJSONResponse(query);
 	}
 	
 	public static String convertToJSON(ResultSet resultSet)

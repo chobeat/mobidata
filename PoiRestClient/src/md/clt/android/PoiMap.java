@@ -3,6 +3,7 @@ package md.clt.android;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.LatLngBoundsCreator;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.os.Bundle;
@@ -58,6 +60,8 @@ public class PoiMap extends FragmentActivity {
 		    public void onCameraChange(CameraPosition arg0) {
 		        // Move camera.
 		    	Double minLat;
+		    	LatLngBounds.Builder bounds= new LatLngBounds.Builder();
+				
 		    	if (pois != null){
 					for(Poi poi:pois){
 					Log.d("log",poi.getName());
@@ -66,30 +70,15 @@ public class PoiMap extends FragmentActivity {
 					.title(poi.getName())
 					.snippet(poi.getCategory())
 					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_star)));
+					bounds.include(poi.getLatLng());
+					
 					}
-				/*	Log.d("userCoord", userCoord.toString());
-					Log.d("poiCoord", poiCoord.toString());
+					bounds.include(userCoord);
+					pMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 200));
 					
-					double minY = Math.min(userCoord.latitude, poiCoord.latitude);
-					double minX = Math.min(userCoord.longitude, poiCoord.longitude);
-					double maxY = Math.max(userCoord.latitude, poiCoord.latitude);
-					double maxX = Math.max(userCoord.longitude, poiCoord.longitude);
-					
-					Log.d("minY", " " + minY);
-					Log.d("minX", " " + minX);
-					Log.d("maxY", " " + maxY);
-					Log.d("maxX", " " + maxX);
-				
-					LatLng northEast = new LatLng(maxY, maxX);
-					LatLng southWest = new LatLng(minY, minX);
-					LatLngBounds bounds = new LatLngBounds(southWest, northEast);
-					
-					// move camera
-					pMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 40));
-					
-			        // Remove listener to prevent position reset on camera move.
-			    	pMap.setOnCameraChangeListener(null);
-			*/	}
+					}
+		    	pMap.setOnCameraChangeListener(null);					
+		    	
 		    }
 		});
 	}

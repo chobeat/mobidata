@@ -58,7 +58,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements LocationListener{
 
 	//private static final String SERVICE_URL = "http://192.168.10.1:8080/PoiWebService/rest/progetto_md";
-	private static final String SERVICE_URL = "http://192.168.56.1:9876/mobidata/poi/poi";
+	private static final String SERVICE_URL = "http://192.168.56.1:9876/mobidata/";
 
 	private static final String TAG = "AndroidRESTClientActivity";
 	private LocationManager locationManager;
@@ -132,7 +132,7 @@ public class MainActivity extends Activity implements LocationListener{
 	}
 
 	public void showPOIMap(View vw){
-		callRetrievePOI(vw, "handlePOIMapResponse");
+		callRetrieveClosePOI(vw, "handlePOIMapResponse");
 	}
 	
 	public void callShowMap(ArrayList<Poi> pois){
@@ -158,16 +158,20 @@ public class MainActivity extends Activity implements LocationListener{
 	}
 	
 	public void retrievePOI(View vw){
-		callRetrievePOI(vw, "handlePOIResponse");
+		callRetrieveClosePOI(vw,  "handlePOIResponse");
 	}
 	
-	public void callRetrievePOI(View vw, String handler) {
+	public void callRetrieveClosePOI(View vw,String handler) {
 
 		// url of the web service
-		String sampleURL = SERVICE_URL + "/";
-
-		// web service calls must be executed in a separate thread
-		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading POIs...");
+		String sampleURL = SERVICE_URL + "poi/close";
+		
+		ArrayList<NameValuePair> params=new ArrayList<NameValuePair>();
+		if(location!=null){
+		params.add(new BasicNameValuePair("lat",""+location.getLatitude()));
+		params.add(new BasicNameValuePair("lng",""+location.getLongitude()));
+		}
+		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading POIs...", params);
 
 		// get keyword
 		EditText etKeyword = (EditText) findViewById(R.id.etKeyword);
@@ -175,7 +179,7 @@ public class MainActivity extends Activity implements LocationListener{
 		if ( sKeyword.length() == 0 ) sKeyword = "*";
 
 		// get value k
-		Spinner kValueSpinner = (Spinner) findViewById(R.id.kValueSpinner);
+		Spinner kValueSpinner = (Spinner) findViewById(R.id.kValueSpinner);	
 		String sKvalue = (String) kValueSpinner.getSelectedItem();
 
 		// compose the request url
@@ -256,6 +260,14 @@ public class MainActivity extends Activity implements LocationListener{
 			this.mContext = mContext;
 			this.processMessage = processMessage;
 		}
+		
+		public WebServiceTask(int taskType,String function ,Context mContext, String processMessage, ArrayList<NameValuePair> params){
+			this.function=function;
+			this.taskType = taskType;
+			this.mContext = mContext;
+			this.processMessage = processMessage;
+			this.params=params;
+		} 
 
 		private void showProgressDialog() {
 
@@ -310,7 +322,7 @@ public class MainActivity extends Activity implements LocationListener{
 				
 
 				MainActivity.class.getMethod(function,String.class).invoke(mContext,response);
-				Log.d("log","si può fare");
+				
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
