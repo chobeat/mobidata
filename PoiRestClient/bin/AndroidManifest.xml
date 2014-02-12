@@ -56,7 +56,14 @@
             android:name="md.clt.android.PoiListActivity"
             android:label="@string/title_activity_poi_list" >
         </activity>
-       
+       <activity
+            android:name="md.clt.android.RouteMap"
+            android:label="Route map" >
+        </activity>
+        <activity
+            android:name="md.clt.android.RoutesListActivity"
+            android:label="Routes list" >
+        </activity>
     </application>
 
 </manifest>

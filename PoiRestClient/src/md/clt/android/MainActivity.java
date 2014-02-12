@@ -58,20 +58,25 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements LocationListener{
 
 	//private static final String SERVICE_URL = "http://192.168.10.1:8080/PoiWebService/rest/progetto_md";
-	private static final String SERVICE_URL = "http://192.168.56.1:9876/mobidata/";
-
+	public static final String SERVICE_URL = "http://192.168.56.1:9876/mobidata/";
+	public static MainActivity instance;
 	private static final String TAG = "AndroidRESTClientActivity";
 	private LocationManager locationManager;
 	private String provider;
 	private TextView latituteField;
 	private TextView longitudeField;
 	private TextView providerField;
-	private Location location;
+	public Location location;
 
+	
+	 public static Context getContext() {
+	    	return instance;
+	    }
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		instance=this;
 		setContentView(R.layout.activity_main);
 
 		// Radius spinner
@@ -132,7 +137,7 @@ public class MainActivity extends Activity implements LocationListener{
 	}
 
 	public void showPOIMap(View vw){
-		callRetrieveClosePOI(vw, "handlePOIMapResponse");
+		callRetrieveCloseRoutes(vw, "handleRoutesMapResponse");
 	}
 	
 	public void callShowMap(ArrayList<Poi> pois){
@@ -149,269 +154,48 @@ public class MainActivity extends Activity implements LocationListener{
 			this.startActivity(intentShowMap);
 		
 	}
+	
+	
+	
 	public void showMap(View vw){
 		callShowMap(new ArrayList<Poi>());
 	}
-	public void handlePOIMapResponse(String response){
+	public void handleRoutesMapResponse(String response){
 		callShowMap(POIResponseToPOIList(response));
 		
 	}
 	
-	public void retrievePOI(View vw){
-		callRetrieveClosePOI(vw,  "handlePOIResponse");
+	public void retrieveCloseRoutes(View vw){
+		callRetrieveCloseRoutes(vw,  "handleRoutesResponse");
 	}
 	
-	public void callRetrieveClosePOI(View vw,String handler) {
+	public void callRetrieveCloseRoutes(View vw,String handler) {
 
 		// url of the web service
-		String sampleURL = SERVICE_URL + "poi/close";
+		String URL = SERVICE_URL + "poi/closeRoutes";
 		
 		ArrayList<NameValuePair> params=new ArrayList<NameValuePair>();
 		if(location!=null){
 		params.add(new BasicNameValuePair("lat",""+location.getLatitude()));
 		params.add(new BasicNameValuePair("lng",""+location.getLongitude()));
 		}
-		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading POIs...", params);
-
-		// get keyword
-		EditText etKeyword = (EditText) findViewById(R.id.etKeyword);
-		String sKeyword = etKeyword.getText().toString();
-		if ( sKeyword.length() == 0 ) sKeyword = "*";
-
-		// get value k
-		Spinner kValueSpinner = (Spinner) findViewById(R.id.kValueSpinner);	
-		String sKvalue = (String) kValueSpinner.getSelectedItem();
-
-		// compose the request url
-		String url = sampleURL; //+ "/" + sKvalue + "/" +  sKeyword + "/" 
-			//	+ location.getLatitude() + "/" + location.getLongitude();
-
-		Log.d("MainActivity - url", url);
-
-		// show toast with req url
-/*		Context context = getApplicationContext();
-		CharSequence text = url;
-		int duration = Toast.LENGTH_LONG;
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();*/
-
-		// execute the call
-		wst.execute(new String[] { url });
-
-	}
-
-
-	/* ASYNCTASK
-	 * http://developer.android.com/reference/android/os/AsyncTask.html
-	 * 
-	 * AsyncTask enables proper and easy use of the UI thread. This class allows to perform 
-	 * background operations and publish results on the UI thread without having to manipulate 
-	 * threads and/or handlers.
-	 * 
-	 * AsyncTask is designed to be a helper class around Thread and Handler and does not 
-	 * constitute a generic threading framework. AsyncTasks should ideally be used for short 
-	 * operations (a few seconds at the most.) If you need to keep threads running for long 
-	 * periods of time, it is highly recommended you use the various APIs provided by the 
-	 * java.util.concurrent package such as Executor, ThreadPoolExecutor and FutureTask.
-	 * 
-	 * An asynchronous task is defined by a computation that runs on a background thread and 
-	 * whose result is published on the UI thread. An asynchronous task is defined by 3 generic 
-	 * types, called Params, Progress and Result, and 4 steps, called onPreExecute, 
-	 * doInBackground, onProgressUpdate and onPostExecute.
-	 * 
-	 * The three types used by an asynchronous task are the following:
-	 * - Params, the type of the parameters sent to the task upon execution.
-	 * - Progress, the type of the progress units published during the background computation.
-	 * - Result, the type of the result of the background computation.
-	 * 
-	 * A task can be cancelled at any time by invoking cancel(boolean). Invoking this method 
-	 * will cause subsequent calls to isCancelled() to return true. After invoking this method, 
-	 * onCancelled(Object), instead of onPostExecute(Object) will be invoked after 
-	 * doInBackground(Object[]) returns. To ensure that a task is cancelled as quickly as 
-	 * possible, you should always check the return value of isCancelled() periodically from 
-	 * doInBackground(Object[]), if possible (inside a loop for instance.)
-	 */
-
-	private class WebServiceTask extends AsyncTask<String, Integer, String> {
-
-		public static final int POST_TASK = 1;
-		public static final int GET_TASK = 2;
-
-		private static final String TAG = "WebServiceTask";
-
-		// connection timeout, in milliseconds (waiting to connect)
-		private static final int CONN_TIMEOUT = 6000;
-
-		// socket timeout, in milliseconds (waiting for data)
-		private static final int SOCKET_TIMEOUT = 10000;
-
-		private int taskType = GET_TASK;
-		private Context mContext = null;
-		private String processMessage = "Processing...";
-
-		// params are used only for UrlEncoded POST requests
-		private ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		private String function;
-		private ProgressDialog pDlg = null;
-
-		public WebServiceTask(int taskType,String function ,Context mContext, String processMessage) {
-			this.function=function;
-			this.taskType = taskType;
-			this.mContext = mContext;
-			this.processMessage = processMessage;
-		}
-		
-		public WebServiceTask(int taskType,String function ,Context mContext, String processMessage, ArrayList<NameValuePair> params){
-			this.function=function;
-			this.taskType = taskType;
-			this.mContext = mContext;
-			this.processMessage = processMessage;
-			this.params=params;
-		} 
-
-		private void showProgressDialog() {
-
-			pDlg = new ProgressDialog(mContext);
-			pDlg.setMessage(processMessage);
-			pDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDlg.setCancelable(false);
-			pDlg.show();
-
-		}
-
-		@Override
-		protected void onPreExecute() {
-
-			hideKeyboard();
-			showProgressDialog();
-
-		}
-
-		// "..." is a construct called varargs to pass an arbitrary number of values to a method
-		// the final argument may be passed as an array or as a sequence of arguments
-		protected String doInBackground(String... urls) {
-
-			String url = urls[0];
-			String result = "";
-
-			HttpResponse response = doResponse(url);
-
-			if (response == null) {
-				return result;
-			} else {
-
-				try {
-
-					result = inputStreamToString(response.getEntity().getContent());
-
-				} catch (IllegalStateException e) {
-					Log.e(TAG, e.getLocalizedMessage(), e);
-
-				} catch (IOException e) {
-					Log.e(TAG, e.getLocalizedMessage(), e);
-				}
-
-			}
-
-			return result;
-		}
-
-		@Override
-		protected void onPostExecute(String response) {
-			try {
-				
-
-				MainActivity.class.getMethod(function,String.class).invoke(mContext,response);
-				
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		else{
+			params.add(new BasicNameValuePair("lat",""+40.73));
+			params.add(new BasicNameValuePair("lng",""+-73.99));
 			
-	//		handlePOIResponse(response);
-			pDlg.dismiss();
-
 		}
+		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading Routes...", params);
 
-		// Establish connection and socket (data retrieval) timeouts
-		private HttpParams getHttpParams() {
-
-			HttpParams htpp = new BasicHttpParams();
-
-			HttpConnectionParams.setConnectionTimeout(htpp, CONN_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(htpp, SOCKET_TIMEOUT);
-
-			return htpp;
-		}
-
-		private HttpResponse doResponse(String url) {
-
-			// Use our connection and data timeouts as parameters for our
-			// DefaultHttpClient
-			HttpClient httpclient = new DefaultHttpClient(getHttpParams());
-
-			HttpResponse response = null;
-
-			try {
-				switch (taskType) {
-
-				case POST_TASK:
-					HttpPost httppost = new HttpPost(url);
-					// Add parameters
-					httppost.setEntity(new UrlEncodedFormEntity(params));
-
-					response = httpclient.execute(httppost);
-					break;
-				case GET_TASK:
-					HttpGet httpget = new HttpGet(url);
-					response = httpclient.execute(httpget);
-					break;
-				}
-			} catch (Exception e) {
-
-				Log.e(TAG, e.getLocalizedMessage(), e);
-
-			}
-
-			return response;
-		}
-
-		private String inputStreamToString(InputStream is) {
-
-			String line = "";
-			StringBuilder total = new StringBuilder();
-
-			// Wrap a BufferedReader around the InputStream
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-
-			try {
-				// Read response until the end
-				while ((line = rd.readLine()) != null) {
-					total.append(line);
-				}
-			} catch (IOException e) {
-				Log.e(TAG, e.getLocalizedMessage(), e);
-			}
-
-			// Return full string
-			return total.toString();
-		}
+		
+		// execute the call
+		wst.execute(new String[] { URL });
 
 	}
 
 	public ArrayList<Poi> POIResponseToPOIList(String response){
 		
 
-			ArrayList<Poi> poiArrayList = new ArrayList<Poi>();
+			ArrayList<Poi> routeArrayList = new ArrayList<Poi>();
 			// parse the json object
 			JSONArray jArray;
 			try {
@@ -430,30 +214,83 @@ public class MainActivity extends Activity implements LocationListener{
 				tmpPoi.setLat(tmpObjPoi.getDouble("latitude"));
 				tmpPoi.setLng(tmpObjPoi.getDouble("longitude"));
 				
-				poiArrayList.add(tmpPoi);
+				routeArrayList.add(tmpPoi);
 			}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return poiArrayList;
+			return routeArrayList;
 	}
-	// update the ArrayAdapter with pois
-	public void handlePOIResponse(String response) {
 
-		
-			updatePoiList(POIResponseToPOIList(response));
-
+	public void handleRoutesResponse(String response) {
+			
+			updateRoutesList(responseToRouteList(response));
 		
 	}
 
+	private ArrayList<Route> responseToRouteList(String response) {
+		 ArrayList<Route> l= new ArrayList<Route>();
+		Log.v("log",response);
+		JSONArray jArray;
+		try {
+			jArray = new JSONArray(response);
+		
+		
+		// TODO: handle JSONexceptions
 
-	private void updatePoiList(ArrayList<Poi> poiArrayList){
+		for (int n=0; n < jArray.length(); n++){
+			
+			JSONObject tmpObjRoute =  jArray.getJSONObject(n);
+			Route tmpRoute = new Route();
+			tmpRoute.setName("Route "+(n+1));
+			tmpRoute.setShape(tmpObjRoute.getString("route"));
+			l.add(tmpRoute);
+		}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return l;
+	}
 
-		PoiLVItem poiItemData[] = new PoiLVItem[poiArrayList.size()];
+	private void updateRoutesList(ArrayList<Route> routeArrayList){
+		
+		RouteLVItem routeItemData[] = new RouteLVItem[routeArrayList.size()];
 
-		for (int n=0; n < poiArrayList.size(); n++){
-			Poi tmpPoi = poiArrayList.get(n);
+		for (int n=0; n < routeArrayList.size(); n++){
+			Route tmpRoute= routeArrayList.get(n);
+
+			RouteLVItem tmpRouteItem = new RouteLVItem(tmpRoute);
+			routeItemData[n] = tmpRouteItem;
+
+			Log.d("MainActivity - add poiItemData", "added poi " + n);
+
+		}
+
+		// launch activity poi list
+		Intent showRouteList = new Intent(MainActivity.this, RoutesListActivity.class);
+		// pass poi items for filling the list
+		ArrayList<RouteLVItem> routeItemDataAL = new ArrayList<RouteLVItem>(Arrays.asList(routeItemData));
+		showRouteList.putExtra("routeItemDataAL", routeItemDataAL);
+		
+		LatLng coord;
+		if (location != null){
+			coord = new LatLng(location.getLatitude(), location.getLongitude());
+		}else{
+			coord = new LatLng(40.73, -73.99);
+		}
+		showRouteList.putExtra("coord", coord);
+		
+		this.startActivity(showRouteList);
+	}
+
+	private void updatePoiList(ArrayList<Poi> routeArrayList){
+
+		PoiLVItem poiItemData[] = new PoiLVItem[routeArrayList.size()];
+
+		for (int n=0; n < routeArrayList.size(); n++){
+			Poi tmpPoi = routeArrayList.get(n);
 
 			PoiLVItem tmpPoiItem = new PoiLVItem(tmpPoi);
 			poiItemData[n] = tmpPoiItem;
@@ -480,7 +317,7 @@ public class MainActivity extends Activity implements LocationListener{
 	}
 
 
-	private void hideKeyboard() {
+	public void hideKeyboard() {
 
 		InputMethodManager inputManager = (InputMethodManager) MainActivity.this
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -512,6 +349,7 @@ public class MainActivity extends Activity implements LocationListener{
 		locationManager.requestLocationUpdates(provider, 5000, 50, this);
 	}
 
+	
 	/* Remove the locationlistener updates when Activity is paused */
 	@Override
 	protected void onPause() {

@@ -63,40 +63,31 @@ public class Server {
 		
 }
 	@POST
-	@Path("close")
+	@Path("closeRoutes")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response listRoutes( MultivaluedMap<String, String> params){
+	public Response listCloseRoutes( MultivaluedMap<String, String> params){
 		String lat=params.getFirst("lat");
 		String lng=params.getFirst("lng");
-		/*return QueryToJSONResponse("\n" + 
-						"WITH close_POI AS\n" + 
-						"	(WITH candidate_set AS ( SELECT nome, location,\n" + 
-						"	ST_Distance(ST_MakePoint(longitude,latitude),\n" + 
-						"	ST_MakePoint(-73.99,40.74))*100000 AS cart_distance\n" + 
-						"	FROM \"POIs\".\"POIsManhattan\"\n" + 
-						"	ORDER BY cart_distance limit 1) \n" + 
-						"	SELECT\n" + 
-						"	nome,ST_Distance(P.location,\n" + 
-						"	ST_GeographyFromText( 'POINT(-73.99 40.74)')) AS\n" + 
-						"	geo_distance\n" + 
-						"	FROM candidate_set as P\n" + 
-						"	ORDER BY geo_distance \n" + 
-						"	limit 1	\n" + 
-						") SELECT ST_AsText(ST_MakeLine(location::geometry))\n" + 
-						"from \"POIs\".\"Checkins4sqManhattan\" as c NATURAL INNER JOIN close_POI as p \n" + 
-						"GROUP BY location\n" + 
-						"\n" + 
-						"limit 100;");*/
-		String query="SELECT * FROM (SELECT *," + 
-				"	ST_Distance(ST_MakePoint(latitude,longitude)," + 
-				"	ST_MakePoint("+lat+","+lng+")) AS cart_distance" + 
-				"	FROM \"POIs\".\"POIsManhattan\"" + 
-				"	ORDER BY cart_distance limit 35) AS T1 ORDER BY nome";;
-		System.out.println(query);
-		return QueryToJSONResponse(query);
+
+		String query="SELECT distinct route, \"POIs\".\"routePopularity\"(r.start, r.end, r.route, ST_Distance(ST_SetSRID(ST_MakePoint("+lat+","+lng+"),4326),route))" + 
+				" AS popularity " + 
+				"FROM \"POIs\".\"routes\" as r order by popularity limit 5";
+			return QueryToJSONResponse(query);
 	}
-	
+	@POST
+	@Path("routeinfo")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response routeToPoints( MultivaluedMap<String, String> params){
+		String route=params.getFirst("route");
+		System.out.println(route);
+		
+		String query="select distinct s.from, s.to,ST_AsText(route) as shape from (SELECT distinct route, userid,day FROM \"POIs\".\"routes\" where route='"+route+ 
+				"') as r join \"POIs\".steps as s on s.userid=r.userid and date_trunc('day',s.arrival_time)=r.day";
+				System.out.println(query);
+			return QueryToJSONResponse(query);
+	}
 	public static String convertToJSON(ResultSet resultSet)
 			throws Exception {
 			JSONArray jsonArray = new JSONArray();
