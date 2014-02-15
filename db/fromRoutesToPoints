@@ -1,0 +1,1 @@
+﻿SELECT userid,day,(ST_DumpPoints(route)).path as path, ST_AsText((ST_DumpPoints(route)).geom) FROM "POIs".routes limit 100

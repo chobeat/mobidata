@@ -1,0 +1,4 @@
+﻿SELECT route,day,ST_Distance(r.route,ST_SetSRID(ST_MakePoint(-73.5933, 40.24),4326)) as d
+FROM "POIs".routes r 
+ORDER BY d ASC 
+LIMIT 1;

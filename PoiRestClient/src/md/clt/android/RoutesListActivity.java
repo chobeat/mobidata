@@ -3,6 +3,7 @@ package md.clt.android;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -28,27 +29,28 @@ import android.view.View;
 import android.widget.ListView;
 
 public class RoutesListActivity extends ListActivity {
-	
+
 	LatLng userCoord;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_routes_list);
-		
-		Intent caller = this.getIntent();
-		
-		userCoord = caller.getParcelableExtra("coord"); 
-		
-		ArrayList<RouteLVItem> routesItemDataAL = 
-				(ArrayList<RouteLVItem>) caller.getSerializableExtra("routeItemDataAL");
-		
-		ListView poiList = (ListView) findViewById(android.R.id.list);
-		
-		RouteLVItem[] routesItemData = routesItemDataAL.toArray(new RouteLVItem[routesItemDataAL.size()]);
 
-		
-		RoutesLVAdapter poiLvAdapter = new RoutesLVAdapter(this, R.layout.listview_item_row, routesItemData);
+		Intent caller = this.getIntent();
+
+		userCoord = caller.getParcelableExtra("coord");
+
+		ArrayList<RouteLVItem> routesItemDataAL = (ArrayList<RouteLVItem>) caller
+				.getSerializableExtra("routeItemDataAL");
+
+		ListView poiList = (ListView) findViewById(android.R.id.list);
+
+		RouteLVItem[] routesItemData = routesItemDataAL
+				.toArray(new RouteLVItem[routesItemDataAL.size()]);
+
+		RoutesLVAdapter poiLvAdapter = new RoutesLVAdapter(this,
+				R.layout.listview_item_row, routesItemData);
 
 		poiList.setAdapter(poiLvAdapter);
 	}
@@ -59,28 +61,32 @@ public class RoutesListActivity extends ListActivity {
 		getMenuInflater().inflate(R.menu.activity_routes_list, menu);
 		return true;
 	}
-	
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-    	RouteLVItem routeItem = (RouteLVItem) l.getItemAtPosition(position);
-        //startActivity(new Intent(this, demo.activityClass));
-    	ArrayList<NameValuePair> params=new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("route",routeItem.getRoute().getShape()));
-    	String URL = MainActivity.SERVICE_URL + "poi/routeinfo";
-		
-		WebServiceTask tsk= new WebServiceTask(WebServiceTask.POST_TASK, "handleRouteInfo", v.getContext(),"Downloading Route Info",params);
-		//pl.add(routeItem.getRoute());
-		tsk.execute(new String[]{URL});
-		//intentShowMap.putExtra("routes", pl);
-		//this.startActivity(intentShowMap);
-    	
-    }
-    public void handleRouteInfo(String response){
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		RouteLVItem routeItem = (RouteLVItem) l.getItemAtPosition(position);
+		// startActivity(new Intent(this, demo.activityClass));
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("id", routeItem.getRoute().getId()));
+		String URL = MainActivity.SERVICE_URL + "poi/routeinfo";
+
+		WebServiceTask tsk = new WebServiceTask(WebServiceTask.POST_TASK,
+				"handleRouteInfo", v.getContext(), "Downloading Route Info",
+				params);
+		// pl.add(routeItem.getRoute());
+		tsk.execute(new String[] { URL });
+		// intentShowMap.putExtra("routes", pl);
+		// this.startActivity(intentShowMap);
+
+	}
+
+	public void handleRouteInfo(String response) {
 		Intent intentShowMap = new Intent(MainActivity.instance, RouteMap.class);
 		LatLng coord;
-		if (MainActivity.instance.location != null){
-			coord = new LatLng(MainActivity.instance.location.getLatitude(),MainActivity.instance.location.getLongitude());
-		}else{
+		if (MainActivity.instance.location != null) {
+			coord = new LatLng(MainActivity.instance.location.getLatitude(),
+					MainActivity.instance.location.getLongitude());
+		} else {
 			coord = new LatLng(40.73, -73.99);
 		}
 		ArrayList<Poi> routeArrayList = new ArrayList<Poi>();
@@ -88,50 +94,50 @@ public class RoutesListActivity extends ListActivity {
 		JSONArray jArray;
 		try {
 			jArray = new JSONArray(response);
-		
-		
-		// TODO: handle JSONexceptions
-/*
-		for (int n=0; n < jArray.length(); n++){
-			
-			JSONObject tmpObjPoi =  jArray.getJSONObject(n);
-			Poi tmpPoi = new Poi();
-			tmpPoi.setCategory(tmpObjPoi.getString("categoria"));
-			tmpPoi.setId(tmpObjPoi.getString("venueid"));
-			tmpPoi.setName(tmpObjPoi.getString("nome"));
-			tmpPoi.setLat(tmpObjPoi.getDouble("latitude"));
-			tmpPoi.setLng(tmpObjPoi.getDouble("longitude"));
-			
-			routeArrayList.add(tmpPoi);
-		}
-	*/
 
-			
-			String shape= jArray.getJSONObject(0).getString("shape");
-			WKTReader reader= new  WKTReader();
+			// TODO: handle JSONexceptions
+			/*
+			 * for (int n=0; n < jArray.length(); n++){
+			 * 
+			 * JSONObject tmpObjPoi = jArray.getJSONObject(n); Poi tmpPoi = new
+			 * Poi(); tmpPoi.setCategory(tmpObjPoi.getString("categoria"));
+			 * tmpPoi.setId(tmpObjPoi.getString("venueid"));
+			 * tmpPoi.setName(tmpObjPoi.getString("nome"));
+			 * tmpPoi.setLat(tmpObjPoi.getDouble("latitude"));
+			 * tmpPoi.setLng(tmpObjPoi.getDouble("longitude"));
+			 * 
+			 * routeArrayList.add(tmpPoi); }
+			 */
 
-			LineString line=null;
-			try {line=(LineString)reader.read(shape);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(line==null)
-				return;
-			
-			ArrayList<LatLng> points=new ArrayList<LatLng>();
-			
-			for(Coordinate p:line.getCoordinates())
-			{points.add(new LatLng(p.y, p.x));
+			String points = jArray.getJSONObject(0).getString("points");
+			WKTReader reader = new WKTReader();
+			Log.v("log", points);
+			points = points.substring(1, points.length() - 2);
+
+			LineString line = null;
+			ArrayList<LatLng> points_arr = new ArrayList<LatLng>();
+
+			StringTokenizer t = new StringTokenizer(points, ",");
+
+			while (true) {
+				String current=t.nextToken();
+				current=current.substring(7, current.length()-3);
+				StringTokenizer intern= new StringTokenizer(current," ");
+				double x=Double.parseDouble(intern.nextToken());
+				double y=Double.parseDouble(intern.nextToken());
+				Log.v("log",x+" "+y);
+				points_arr.add(new LatLng(y, x));
+				if(!t.hasMoreElements())
+					break;
 			}
 			intentShowMap.putExtra("userCoord", coord);
-			intentShowMap.putParcelableArrayListExtra("shape",points);
+			intentShowMap.putParcelableArrayListExtra("shape", points_arr);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		//intentShowMap.putExtra("pois", pois);
+		} 
+		// intentShowMap.putExtra("pois", pois);
 		this.startActivity(intentShowMap);
-	
+
 	}
 }

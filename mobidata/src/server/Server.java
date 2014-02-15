@@ -69,23 +69,23 @@ public class Server {
 	public Response listCloseRoutes( MultivaluedMap<String, String> params){
 		String lat=params.getFirst("lat");
 		String lng=params.getFirst("lng");
-
-		String query="SELECT distinct route, \"POIs\".\"routePopularity\"(r.start, r.end, r.route, ST_Distance(ST_SetSRID(ST_MakePoint("+lat+","+lng+"),4326),route))" + 
+		
+		String query="SELECT id,path_name[array_upper(path_name,1)] as end, path_name[array_lower(path_name,1)] as start, ST_Length(ST_GeometryFromText(shape)) as length, \"POIs\".\"routePopularity2\"(ST_Distance(ST_SetSRID(ST_MakePoint("+lat+","+lng+"),4326),ST_SetSRID(ST_GeometryFromText(shape),4326)),1,1)" + 
 				" AS popularity " + 
-				"FROM \"POIs\".\"routes\" as r order by popularity limit 5";
-			return QueryToJSONResponse(query);
+				"FROM \"POIs\".\"routes2\" as r where ST_Length(shape)>0 order by popularity desc limit 5";
+		System.out.println(query);
+		return QueryToJSONResponse(query);
 	}
 	@POST
 	@Path("routeinfo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response routeToPoints( MultivaluedMap<String, String> params){
-		String route=params.getFirst("route");
-		System.out.println(route);
+		String id=params.getFirst("id");
 		
-		String query="select distinct s.from, s.to,ST_AsText(route) as shape from (SELECT distinct route, userid,day FROM \"POIs\".\"routes\" where route='"+route+ 
-				"') as r join \"POIs\".steps as s on s.userid=r.userid and date_trunc('day',s.arrival_time)=r.day";
-				System.out.println(query);
+		
+		String query="select shape::geometry,path_name, path, points from \"POIs\".routes2 where id="+id+";";
+				
 			return QueryToJSONResponse(query);
 	}
 	public static String convertToJSON(ResultSet resultSet)

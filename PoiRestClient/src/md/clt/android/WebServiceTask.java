@@ -111,7 +111,8 @@ public class WebServiceTask extends AsyncTask<String, Integer, String> {
 	protected void onPostExecute(String response) {
 		try {
 			
-
+			Log.v("log",function);
+			Log.v("log",""+mContext);
 			mContext.getClass().getMethod(function,String.class).invoke(mContext,response);
 			
 		} catch (IllegalAccessException e) {

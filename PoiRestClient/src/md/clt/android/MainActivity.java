@@ -243,8 +243,9 @@ public class MainActivity extends Activity implements LocationListener{
 			
 			JSONObject tmpObjRoute =  jArray.getJSONObject(n);
 			Route tmpRoute = new Route();
-			tmpRoute.setName("Route "+(n+1));
-			tmpRoute.setShape(tmpObjRoute.getString("route"));
+			tmpRoute.setName("Route from "+tmpObjRoute.getString("start")+" to "+tmpObjRoute.getString("end"));
+			tmpRoute.setLength(tmpObjRoute.getDouble("length"));
+			tmpRoute.setId(tmpObjRoute.getString("id"));
 			l.add(tmpRoute);
 		}
 		} catch (JSONException e) {

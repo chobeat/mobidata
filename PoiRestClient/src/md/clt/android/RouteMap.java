@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -69,15 +70,16 @@ public class RouteMap extends FragmentActivity {
 		    		Log.v("log","AEEEEEEEEEEEEE");
 		    		PolylineOptions options= new PolylineOptions();
 		    		options.addAll(shape);
-		    		options.color(1);
-		    		options.width(200);
-		    		pMap.addPolyline(options);
+		    		options.visible(true);
+		    		options.color(Color.RED);
+		    		options.width(5);
 		    		
 		    		for(LatLng p:shape){
 
 			    		bounds.include(p);
 		    			pMap.addMarker(new MarkerOptions().position(p)).setIcon(BitmapDescriptorFactory.defaultMarker());
 		    		}
+		    		pMap.addPolyline(options);
 		    		
 		    	}
 		    	
@@ -137,7 +139,7 @@ public class RouteMap extends FragmentActivity {
 							.position(userCoord)
 							.title("Your location")
 							.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_user)));
-		pMap.animateCamera(CameraUpdateFactory.newLatLng(userCoord));
+		//pMap.animateCamera(CameraUpdateFactory.newLatLng(userCoord));
 		
 		/* public static CameraUpdate newLatLngZoom (LatLng latLng, float zoom) 
 		 * Returns a CameraUpdate that moves the center of the screen to a latitude 

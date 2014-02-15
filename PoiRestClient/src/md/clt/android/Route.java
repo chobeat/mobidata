@@ -8,10 +8,20 @@ import com.google.android.gms.maps.model.LatLng;
 public class Route implements Serializable{
 	
 	private static final long serialVersionUID = 7264798056035332982L;
-	//private String id;
+	private String id;
     private String name;
     private String shape;
-   public String getShape() {
+    private Double length;
+	public Double getLength() {
+		return length;
+	}
+	public void setLength(Double length) {
+		this.length = length;
+	}
+
+	private List<Poi> path;
+	
+    public String getShape() {
 		return shape;
 	}
 	public void setShape(String shape) {
@@ -24,7 +34,6 @@ public class Route implements Serializable{
 	public void setPath(List<Poi> path) {
 		this.path = path;
 	}
-	private List<Poi> path;
  
     public String getName() {
         return name;
@@ -40,29 +49,29 @@ public class Route implements Serializable{
     }*/
      
     public Route(String id, String name, String category,List<Poi> path) {
-   	//    this.id = id;
+   	    this.id = id;
         this.name = name;
      //   this.category = category;
         this.path=path;
     }
      
     public Route(String id, String name, String category) {	 
-      //  this.id = id;
+        this.id = id;
         this.name = name;
        // this.category = category;
        
     }
       
     public Route() {
-    //    this.id = "-1";
+        this.id = "-1";
         this.name = "";
    //     this.category = "";
     }
-	/*public String getId() {
+	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
-	}*/
+	}
       
 }
