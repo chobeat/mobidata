@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.locks.Lock;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -46,6 +47,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,8 +69,7 @@ public class MainActivity extends Activity implements LocationListener{
 	private TextView longitudeField;
 	private TextView providerField;
 	public Location location;
-
-	
+	private SeekBar currentPOISlider;
 	 public static Context getContext() {
 	    	return instance;
 	    }
@@ -79,23 +80,22 @@ public class MainActivity extends Activity implements LocationListener{
 		instance=this;
 		setContentView(R.layout.activity_main);
 
-		// Radius spinner
-		Spinner spRadius = (Spinner) findViewById(R.id.kValueSpinner);
-		// Create an ArrayAdapter using the string array and a default spinner layout
-		ArrayAdapter<CharSequence> RadiusAdapter = ArrayAdapter.createFromResource(this, 
-				R.array.kValue_array, android.R.layout.simple_spinner_item);
-		// Specify the layout to use when the list of choices appears
-		RadiusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		// Apply the adapter to the spinner
-		spRadius.setAdapter(RadiusAdapter);
-
-		// @@@lez3
+		WebServiceTask catRequest= new WebServiceTask(WebServiceTask.GET_TASK, "handleCategoriesResponse", this, "Downloading Categories"); 
+		catRequest.execute(new String[]{SERVICE_URL+"poi/categories"});
+		
+		
 		latituteField = (TextView) findViewById(R.id.tvLatVal);
 		longitudeField = (TextView) findViewById(R.id.tvLonVal);
 		providerField = (TextView) findViewById(R.id.tvProvVal);
 		// Get the location manager
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+		
+
+		currentPOISlider = (SeekBar) findViewById(R.id.POISlider);
+		
+		currentPOISlider.setOnSeekBarChangeListener(new POISliderListener((TextView)this.findViewById(R.id.currentPOIValue)));
+		
 		// get the value of askedGps from the last saved instance of the activity
 		//if (savedInstanceState.containsKey("asked_gps")) askedGps = savedInstanceState.getBoolean("asked_gps");
 		// ask the user to enable GPS (if it is off)
@@ -155,7 +155,32 @@ public class MainActivity extends Activity implements LocationListener{
 		
 	}
 	
-	
+	public void handleCategoriesResponse(String response){
+		JSONArray jArray;
+		ArrayList<String> l= new ArrayList<String>();
+
+		l.add("None");
+		try {
+			jArray = new JSONArray(response);
+		
+		
+		// TODO: handle JSONexceptions
+
+		for (int n=0; n < jArray.length(); n++){
+			
+			JSONObject tmpObj =  jArray.getJSONObject(n);
+			
+			
+			l.add(tmpObj.getString("nomemc"));
+		}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Spinner spCat = (Spinner) findViewById(R.id.catSpinner);
+		ArrayAdapter<String> aa=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 ,l);
+		spCat.setAdapter(aa);
+	}
 	
 	public void showMap(View vw){
 		callShowMap(new ArrayList<Poi>());
@@ -184,6 +209,11 @@ public class MainActivity extends Activity implements LocationListener{
 			params.add(new BasicNameValuePair("lng",""+-73.99));
 			
 		}
+		Spinner spCat = (Spinner) findViewById(R.id.catSpinner);
+		params.add(new BasicNameValuePair("cat",""+spCat.getSelectedItem()));
+		
+		params.add(new BasicNameValuePair("poiNR", ""+(currentPOISlider.getProgress()+POISliderListener.OFFSET)));
+		
 		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading Routes...", params);
 
 		

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Poi Rest Client</string>
+    <string name="app_name">Routes Finder</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="firstName">Keyword:</string>
@@ -25,5 +25,6 @@
     <string name="showMap">Show map</string>
     <string name="title_activity_poi_list">List of POIs</string>
     <string name="showPOIMap">Show POIs on Map</string>
+    <string name="categories">Categories</string>
 
 </resources>

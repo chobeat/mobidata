@@ -216,20 +216,21 @@ containing a value of this type.
         public static final int ic_user=0x7f02001e;
     }
     public static final class id {
-        public static final int bn_map=0x7f050010;
-        public static final int bn_mapPOI=0x7f050011;
-        public static final int bn_retrieve=0x7f05000f;
-        public static final int etKeyword=0x7f05000e;
+        public static final int POISlider=0x7f050011;
+        public static final int bn_retrieve=0x7f050013;
+        public static final int catSpinner=0x7f05000f;
+        public static final int currentPOIValue=0x7f050012;
         public static final int hybrid=0x7f050004;
-        public static final int imgIcon=0x7f050013;
+        public static final int imgIcon=0x7f050015;
         public static final int kValueSpinner=0x7f05000d;
-        public static final int map=0x7f050012;
-        public static final int menu_settings=0x7f050015;
+        public static final int map=0x7f050014;
+        public static final int menu_settings=0x7f050017;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
         public static final int satellite=0x7f050002;
         public static final int tableLayout1=0x7f050005;
         public static final int terrain=0x7f050003;
+        public static final int textPOISlider=0x7f050010;
         public static final int tvKvalue=0x7f05000c;
         public static final int tvLat=0x7f050008;
         public static final int tvLatVal=0x7f050009;
@@ -237,7 +238,8 @@ containing a value of this type.
         public static final int tvLonVal=0x7f05000b;
         public static final int tvProv=0x7f050006;
         public static final int tvProvVal=0x7f050007;
-        public static final int txtTitle=0x7f050014;
+        public static final int tvcat=0x7f05000e;
+        public static final int txtTitle=0x7f050016;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
@@ -282,6 +284,7 @@ containing a value of this type.
         [CHAR LIMIT=70] 
          */
         public static final int auth_client_using_bad_version_title=0x7f060014;
+        public static final int categories=0x7f060029;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=40] 
