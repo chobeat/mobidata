@@ -3,10 +3,12 @@ package md.clt.android;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -15,6 +17,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.LatLngBoundsCreator;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -26,6 +29,8 @@ import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /* While the Fragment API was introduced in HONEYCOMB (Android 3.0), 
@@ -43,9 +48,32 @@ public class RouteMap extends FragmentActivity {
 		Intent callerIntent = getIntent();
 		final LatLng userCoord = callerIntent.getParcelableExtra("userCoord");
 		final ArrayList<Poi> pois = (ArrayList<Poi>) callerIntent.getSerializableExtra("pois");
-		final List<LatLng>shape= (List<LatLng>) callerIntent.getSerializableExtra("shape");
 		setContentView(R.layout.activity_routes_map);
 		setUpMapIfNeeded(userCoord);
+		
+		pMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+			
+
+	        @Override
+	        public View getInfoWindow(Marker arg0) {
+	            return null;
+	        }
+
+	        @Override
+	        public View getInfoContents(Marker marker) {
+	        	StringTokenizer tokenizer=new StringTokenizer(marker.getSnippet(),"|");
+	            View v = getLayoutInflater().inflate(R.layout.marker, null);
+	            TextView title = (TextView) v.findViewById(R.id.title);
+	            title.setText(marker.getTitle());
+	            TextView category= (TextView) v.findViewById(R.id.category);
+	            TextView address= (TextView) v.findViewById(R.id.address);
+	            
+	            category.setText(tokenizer.nextToken());
+	            address.setText(tokenizer.nextToken());
+	            
+	            return v;
+	        }
+	    });
 		
 		// Sets a callback that's invoked when the camera changes.
 		pMap.setOnCameraChangeListener(new OnCameraChangeListener() {
@@ -66,37 +94,25 @@ public class RouteMap extends FragmentActivity {
 		    	Double minLat;
 		    	LatLngBounds.Builder bounds= new LatLngBounds.Builder();
 				
-		    	if(shape!=null){
-		    		Log.v("log","AEEEEEEEEEEEEE");
+		    	if (pois != null){
 		    		PolylineOptions options= new PolylineOptions();
-		    		options.addAll(shape);
 		    		options.visible(true);
 		    		options.color(Color.RED);
 		    		options.width(5);
-		    		
-		    		for(LatLng p:shape){
-
-			    		bounds.include(p);
-		    			pMap.addMarker(new MarkerOptions().position(p)).setIcon(BitmapDescriptorFactory.defaultMarker());
-		    		}
-		    		pMap.addPolyline(options);
-		    		
-		    	}
 		    	
-		    	if (pois != null){
-		    		
-		    	
-			/*		for(Route route:routes){
-					Log.d("log",route.getName());
+					for(Poi p:pois){
+					Log.d("log",p.getName());
 					pMap.addMarker(new MarkerOptions()
-					.position(route.getLatLng())
-					.title(route.getName())
-					.snippet(route.getCategory())
+					.position(p.getLatLng())
+					.title(p.getName())
+					.snippet(p.getCategory()+"|"+p.getAddress())
 					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_star)));
-					bounds.include(route.getLatLng());
+					options.add(p.getLatLng());
+					bounds.include (p.getLatLng());
+					}
 					
-					}*/
-					
+					pMap.addPolyline(options);
+		    		
 					}
 
 				bounds.include(userCoord);

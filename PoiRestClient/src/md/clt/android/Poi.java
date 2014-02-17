@@ -2,6 +2,9 @@ package md.clt.android;
 
 import java.io.Serializable;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
 public class Poi implements Serializable{
@@ -12,8 +15,14 @@ public class Poi implements Serializable{
     private String category;
     private double lat;
     private double lng;
- 
-    public String getName() {
+    private String address;
+    public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getName() {
         return name;
     }
     public void setName(String name) {
@@ -74,5 +83,6 @@ public class Poi implements Serializable{
 	public void setId(String id) {
 		this.id = id;
 	}
+	
       
 }

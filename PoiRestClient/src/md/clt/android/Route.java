@@ -1,6 +1,7 @@
 package md.clt.android;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -12,6 +13,14 @@ public class Route implements Serializable{
     private String name;
     private String shape;
     private Double length;
+    private int popularity;
+	public int getPopularity() {
+		return popularity;
+	}
+	public void setPopularity(int popularity) {
+		this.popularity = popularity;
+	}
+	
 	public Double getLength() {
 		return length;
 	}

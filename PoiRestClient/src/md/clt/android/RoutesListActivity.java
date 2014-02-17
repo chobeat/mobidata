@@ -83,6 +83,8 @@ public class RoutesListActivity extends ListActivity {
 	public void handleRouteInfo(String response) {
 		Intent intentShowMap = new Intent(MainActivity.instance, RouteMap.class);
 		LatLng coord;
+
+		Log.v("log",response);
 		if (MainActivity.instance.location != null) {
 			coord = new LatLng(MainActivity.instance.location.getLatitude(),
 					MainActivity.instance.location.getLongitude());
@@ -90,48 +92,29 @@ public class RoutesListActivity extends ListActivity {
 			coord = new LatLng(40.73, -73.99);
 		}
 		ArrayList<Poi> routeArrayList = new ArrayList<Poi>();
-		// parse the json object
 		JSONArray jArray;
+
 		try {
 			jArray = new JSONArray(response);
-
 			// TODO: handle JSONexceptions
-			/*
-			 * for (int n=0; n < jArray.length(); n++){
-			 * 
-			 * JSONObject tmpObjPoi = jArray.getJSONObject(n); Poi tmpPoi = new
-			 * Poi(); tmpPoi.setCategory(tmpObjPoi.getString("categoria"));
-			 * tmpPoi.setId(tmpObjPoi.getString("venueid"));
-			 * tmpPoi.setName(tmpObjPoi.getString("nome"));
-			 * tmpPoi.setLat(tmpObjPoi.getDouble("latitude"));
-			 * tmpPoi.setLng(tmpObjPoi.getDouble("longitude"));
-			 * 
-			 * routeArrayList.add(tmpPoi); }
-			 */
+			
+			  for (int n=0; n < jArray.length(); n++){
+			Log.v("log","punto");
+			  JSONObject tmpObjPoi = jArray.getJSONObject(n); 
+			  Poi tmpPoi = new  Poi(); 
+			  tmpPoi.setCategory(tmpObjPoi.getString("categoria"));
+			  tmpPoi.setId(tmpObjPoi.getString("venueid"));
+			  tmpPoi.setAddress(tmpObjPoi.getString("indirizzo"));
+			  tmpPoi.setName(tmpObjPoi.getString("nome"));
+			  tmpPoi.setLat(tmpObjPoi.getDouble("latitude"));
+			  tmpPoi.setLng(tmpObjPoi.getDouble("longitude"));
+			  routeArrayList.add(tmpPoi); 
+			  }
+			 
 
-			String points = jArray.getJSONObject(0).getString("points");
-			WKTReader reader = new WKTReader();
-			Log.v("log", points);
-			points = points.substring(1, points.length() - 2);
-
-			LineString line = null;
-			ArrayList<LatLng> points_arr = new ArrayList<LatLng>();
-
-			StringTokenizer t = new StringTokenizer(points, ",");
-
-			while (true) {
-				String current=t.nextToken();
-				current=current.substring(7, current.length()-3);
-				StringTokenizer intern= new StringTokenizer(current," ");
-				double x=Double.parseDouble(intern.nextToken());
-				double y=Double.parseDouble(intern.nextToken());
-				Log.v("log",x+" "+y);
-				points_arr.add(new LatLng(y, x));
-				if(!t.hasMoreElements())
-					break;
-			}
-			intentShowMap.putExtra("userCoord", coord);
-			intentShowMap.putParcelableArrayListExtra("shape", points_arr);
+			
+						intentShowMap.putExtra("userCoord", coord);
+			intentShowMap.putExtra("pois", routeArrayList);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

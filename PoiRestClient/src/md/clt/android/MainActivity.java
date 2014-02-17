@@ -276,6 +276,7 @@ public class MainActivity extends Activity implements LocationListener{
 			tmpRoute.setName("Route from "+tmpObjRoute.getString("start")+" to "+tmpObjRoute.getString("end"));
 			tmpRoute.setLength(tmpObjRoute.getDouble("length"));
 			tmpRoute.setId(tmpObjRoute.getString("id"));
+			tmpRoute.setPopularity(tmpObjRoute.getInt("popularity"));
 			l.add(tmpRoute);
 		}
 		} catch (JSONException e) {
@@ -299,9 +300,7 @@ public class MainActivity extends Activity implements LocationListener{
 
 		}
 
-		// launch activity poi list
 		Intent showRouteList = new Intent(MainActivity.this, RoutesListActivity.class);
-		// pass poi items for filling the list
 		ArrayList<RouteLVItem> routeItemDataAL = new ArrayList<RouteLVItem>(Arrays.asList(routeItemData));
 		showRouteList.putExtra("routeItemDataAL", routeItemDataAL);
 		
