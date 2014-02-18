@@ -1,9 +1,22 @@
 package com.mbclient;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.*;
+import com.androidquery.util.AQUtility;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,14 +24,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.TextView;
-
+import com.google.android.gms.common.GooglePlayServicesUtil;
 public class MainActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
@@ -41,7 +56,8 @@ public class MainActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		Intent goToNextActivity = new Intent(getApplicationContext(), MapActivity.class);
+		startActivity(goToNextActivity);
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -76,6 +92,33 @@ public class MainActivity extends FragmentActivity implements
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+
+		updateRoutes();
+	}
+
+	public void updateRoutes() {
+
+		// do a twiiter search with a http post
+
+		String url = "http://192.168.56.1:9876/mobidata/poi/poi";
+
+		Map<String, Object> params = new HashMap<String, Object>();
+			
+		AQuery aq = new AQuery(getApplicationContext());
+		aq.ajax(url, params, JSONArray.class,  new AjaxCallback<JSONArray>() {
+			public void callback(String url, JSONArray json, AjaxStatus status) {
+				Log.v("prova",url);
+				Log.v("prova",status.getMessage());
+				if (json != null) {
+					TextView t = (TextView) mViewPager
+							.findViewWithTag("dummy1");
+					t.setText(json.toString());
+					Log.v("prova", "in callback");
+				}
+			}
+
+		});
+		Log.v("prova", "dopoajax");
 	}
 
 	@Override
@@ -118,20 +161,24 @@ public class MainActivity extends FragmentActivity implements
 			// getItem is called to instantiate the fragment for the given page.
 			// Return a DummySectionFragment (defined as a static inner class
 			// below) with the page number as its lone argument.
-			if(position==0){
+			
+			if (position == 0) {
+		
 				Fragment fragment = new RouteFragment();
+
 				Bundle args = new Bundle();
+			
 				args.putInt("section_number", position + 1);
 				fragment.setArguments(args);
 				return fragment;
-					
-			}
-			else{
-			Fragment fragment = new DummySectionFragment();
-			Bundle args = new Bundle();
-			args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-			fragment.setArguments(args);
-			return fragment;
+
+			} else {
+				Fragment fragment = new DummySectionFragment();
+				Bundle args = new Bundle();
+				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER,
+						position + 1);
+				fragment.setArguments(args);
+				return fragment;
 			}
 		}
 
@@ -154,6 +201,7 @@ public class MainActivity extends FragmentActivity implements
 			}
 			return null;
 		}
+
 	}
 
 	/**
@@ -173,16 +221,19 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main_dummy,
-					container, false);
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
 			TextView dummyTextView = (TextView) rootView
 					.findViewById(R.id.section_label);
+			dummyTextView.setTag("dummy1");
+
 			dummyTextView.setText(Integer.toString(getArguments().getInt(
 					ARG_SECTION_NUMBER)));
 			return rootView;
 		}
 	}
-	public static class RouteFragment extends Fragment {
+
+	public static class RouteFragment extends Fragment{
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
@@ -195,12 +246,12 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main_dummy,
-					container, false);
-			TextView dummyTextView = (TextView) rootView
-					.findViewById(R.id.section_label);
-			dummyTextView.setText("anacleto");
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
+			
+
 			return rootView;
 		}
+
 	}
 }

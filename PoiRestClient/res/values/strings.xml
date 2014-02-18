@@ -26,5 +26,7 @@
     <string name="title_activity_poi_list">List of POIs</string>
     <string name="showPOIMap">Show POIs on Map</string>
     <string name="categories">Categories</string>
+    <string name="radio_length">Length</string>
+    <string name="radio_popularity">Popularity</string>
 
 </resources>

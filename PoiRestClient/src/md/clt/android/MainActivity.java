@@ -70,6 +70,7 @@ public class MainActivity extends Activity implements LocationListener{
 	private TextView providerField;
 	public Location location;
 	private SeekBar currentPOISlider;
+	private SeekBar currentRangeSlider;
 	 public static Context getContext() {
 	    	return instance;
 	    }
@@ -92,9 +93,14 @@ public class MainActivity extends Activity implements LocationListener{
 
 		
 
-		currentPOISlider = (SeekBar) findViewById(R.id.POISlider);
+		currentPOISlider = (SeekBar) findViewById(R.id.PoiSlider);
 		
 		currentPOISlider.setOnSeekBarChangeListener(new POISliderListener((TextView)this.findViewById(R.id.currentPOIValue)));
+
+		currentRangeSlider = (SeekBar) findViewById(R.id.RangeSlider);
+		
+		currentRangeSlider.setOnSeekBarChangeListener(new RangeSliderListener((TextView)this.findViewById(R.id.currentRangeValue)));
+
 		
 		// get the value of askedGps from the last saved instance of the activity
 		//if (savedInstanceState.containsKey("asked_gps")) askedGps = savedInstanceState.getBoolean("asked_gps");
@@ -213,6 +219,7 @@ public class MainActivity extends Activity implements LocationListener{
 		params.add(new BasicNameValuePair("cat",""+spCat.getSelectedItem()));
 		
 		params.add(new BasicNameValuePair("poiNR", ""+(currentPOISlider.getProgress()+POISliderListener.OFFSET)));
+		params.add(new BasicNameValuePair("range", ""+(currentRangeSlider.getProgress())));
 		
 		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading Routes...", params);
 

@@ -27,11 +27,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.RelativeLayout;
 
 public class RoutesListActivity extends ListActivity {
 
 	LatLng userCoord;
-
+	 private RadioGroup radioRouteGroup;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,11 +44,9 @@ public class RoutesListActivity extends ListActivity {
 		Intent caller = this.getIntent();
 
 		userCoord = caller.getParcelableExtra("coord");
-
+		
 		ArrayList<RouteLVItem> routesItemDataAL = (ArrayList<RouteLVItem>) caller
 				.getSerializableExtra("routeItemDataAL");
-
-		ListView poiList = (ListView) findViewById(android.R.id.list);
 
 		RouteLVItem[] routesItemData = routesItemDataAL
 				.toArray(new RouteLVItem[routesItemDataAL.size()]);
@@ -52,7 +54,23 @@ public class RoutesListActivity extends ListActivity {
 		RoutesLVAdapter poiLvAdapter = new RoutesLVAdapter(this,
 				R.layout.listview_item_row, routesItemData);
 
+		ListView poiList = (ListView) findViewById(android.R.id.list);
+
+		Log.v("sorting",""+routesItemDataAL.size());
 		poiList.setAdapter(poiLvAdapter);
+		
+		radioRouteGroup = (RadioGroup) findViewById(R.id.radioRoute);
+		
+		
+		radioRouteGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+			RadioButton button=	(RadioButton)findViewById(group.getCheckedRadioButtonId());
+				Log.v("log",""+button.getText());
+			}
+		});
+	
 	}
 
 	@Override

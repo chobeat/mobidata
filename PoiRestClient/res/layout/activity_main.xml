@@ -81,29 +81,6 @@
         </TextView>
     </TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/tvKvalue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:text="@string/kValue"
-            android:textSize="22sp" >
-        </TextView>
-
-        <Spinner
-            android:id="@+id/kValueSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:textSize="22sp" />
-    </TableRow>
-
     <TableRow>
 
         <TextView
@@ -124,7 +101,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:text="@string/categories"
-            android:textSize="33dp" />
+            android:textSize="33sp" />
     </TableRow>
 
     <TableRow>
@@ -137,22 +114,49 @@
             android:text="# of POIs"
             android:textStyle="bold" />
 
-    
+        
         <SeekBar
-            android:id="@+id/POISlider"
+            android:id="@+id/PoiSlider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:max="17"
+            android:max="16"
             android:progress="0" />
-
-</TableRow><TableRow>
+    
+        
         <TextView
             android:id="@+id/currentPOIValue"
-            android:layout_width="wrap_content"
+            android:layout_width="10sp"
+            
+            android:text="4"
             android:layout_height="wrap_content"
             android:gravity="center" />
-        
     </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/textRangeSlider"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:text="Range"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/RangeSlider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="25"
+            android:progress="5" />
+          
+        <TextView
+            android:id="@+id/currentRangeValue"
+            android:layout_width="10sp"
+            android:layout_height="wrap_content"
+            android:text="5"
+            android:gravity="center" />
+    </TableRow>
+
 
     <TableRow
         android:layout_width="match_parent"
@@ -176,7 +180,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="showPOIMap"
-            android:text="@string/showPOIMap" />        -->
+            android:text="@string/showPOIMap" />
+        -->
     </TableRow>
 
 </TableLayout>
