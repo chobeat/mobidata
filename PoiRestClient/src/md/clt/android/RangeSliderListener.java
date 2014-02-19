@@ -14,7 +14,7 @@ public class RangeSliderListener implements OnSeekBarChangeListener {
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		currValue.setText(String.valueOf(progress));
+		currValue.setText(String.valueOf(progress*100));
 	}
 
 	@Override

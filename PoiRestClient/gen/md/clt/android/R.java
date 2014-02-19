@@ -218,27 +218,29 @@ containing a value of this type.
     public static final class id {
         public static final int PoiSlider=0x7f05000f;
         public static final int RangeSlider=0x7f050012;
-        public static final int address=0x7f05001f;
+        public static final int address=0x7f050021;
         public static final int bn_retrieve=0x7f050014;
         public static final int catSpinner=0x7f05000d;
-        public static final int category=0x7f05001e;
+        public static final int category=0x7f050020;
         public static final int currentPOIValue=0x7f050010;
         public static final int currentRangeValue=0x7f050013;
         public static final int hybrid=0x7f050004;
-        public static final int imgIcon=0x7f050019;
         public static final int map=0x7f050015;
-        public static final int menu_settings=0x7f050020;
+        public static final int menu_settings=0x7f050022;
+        public static final int my_always_visible_textview=0x7f050017;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
-        public static final int radioLength=0x7f050017;
-        public static final int radioPopularity=0x7f050018;
+        public static final int radioLengthDown=0x7f050019;
+        public static final int radioLengthUp=0x7f050018;
+        public static final int radioPopularityDown=0x7f05001b;
+        public static final int radioPopularityUp=0x7f05001a;
         public static final int radioRoute=0x7f050016;
         public static final int satellite=0x7f050002;
         public static final int tableLayout1=0x7f050005;
         public static final int terrain=0x7f050003;
         public static final int textPOISlider=0x7f05000e;
         public static final int textRangeSlider=0x7f050011;
-        public static final int title=0x7f05001d;
+        public static final int title=0x7f05001f;
         public static final int tvLat=0x7f050008;
         public static final int tvLatVal=0x7f050009;
         public static final int tvLog=0x7f05000a;
@@ -246,9 +248,9 @@ containing a value of this type.
         public static final int tvProv=0x7f050006;
         public static final int tvProvVal=0x7f050007;
         public static final int tvcat=0x7f05000c;
-        public static final int txtLength=0x7f05001b;
-        public static final int txtPopularity=0x7f05001c;
-        public static final int txtTitle=0x7f05001a;
+        public static final int txtLength=0x7f05001d;
+        public static final int txtPopularity=0x7f05001e;
+        public static final int txtTitle=0x7f05001c;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;

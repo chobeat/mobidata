@@ -1,6 +1,7 @@
 package md.clt.android;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -35,7 +36,8 @@ import android.widget.RelativeLayout;
 public class RoutesListActivity extends ListActivity {
 
 	LatLng userCoord;
-	 private RadioGroup radioRouteGroup;
+	RoutesLVAdapter routeLvAdapter;
+	private RadioGroup radioRouteGroup;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,14 +52,13 @@ public class RoutesListActivity extends ListActivity {
 
 		RouteLVItem[] routesItemData = routesItemDataAL
 				.toArray(new RouteLVItem[routesItemDataAL.size()]);
-
-		RoutesLVAdapter poiLvAdapter = new RoutesLVAdapter(this,
+		routeLvAdapter = new RoutesLVAdapter(this,
 				R.layout.listview_item_row, routesItemData);
-
-		ListView poiList = (ListView) findViewById(android.R.id.list);
-
+		
+		ListView routeList = (ListView) findViewById(android.R.id.list);
+		
 		Log.v("sorting",""+routesItemDataAL.size());
-		poiList.setAdapter(poiLvAdapter);
+		routeList.setAdapter(routeLvAdapter);
 		
 		radioRouteGroup = (RadioGroup) findViewById(R.id.radioRoute);
 		
@@ -67,7 +68,49 @@ public class RoutesListActivity extends ListActivity {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 			RadioButton button=	(RadioButton)findViewById(group.getCheckedRadioButtonId());
-				Log.v("log",""+button.getText());
+			ListView routeList = (ListView) findViewById(android.R.id.list);
+			RoutesLVAdapter routesLVAdapter=(RoutesLVAdapter)routeList.getAdapter();
+			if(button.getId()==R.id.radioPopularityUp)
+					routesLVAdapter.sort(new Comparator<RouteLVItem>() {
+
+						@Override
+						public int compare(RouteLVItem lhs, RouteLVItem rhs) {
+							// TODO Auto-generated method stub
+							return Integer.compare(lhs.getPopularity(), rhs.getPopularity());
+						}
+					});
+				else  if(button.getId()==R.id.radioLengthUp)
+				
+					routesLVAdapter.sort(new Comparator<RouteLVItem>() {
+
+						@Override
+						public int compare(RouteLVItem lhs, RouteLVItem rhs) {
+							// TODO Auto-generated method stub
+							return Integer.compare(lhs.getLength(), rhs.getLength());
+						}
+					});
+				else if(button.getId()==R.id.radioPopularityDown){
+					routesLVAdapter.sort(new Comparator<RouteLVItem>() {
+
+						@Override
+						public int compare(RouteLVItem lhs, RouteLVItem rhs) {
+							// TODO Auto-generated method stub
+							return Integer.compare(rhs.getPopularity(), lhs.getPopularity());
+						}
+					});
+				}
+					else
+					{		routesLVAdapter.sort(new Comparator<RouteLVItem>() {
+
+							@Override
+							public int compare(RouteLVItem lhs, RouteLVItem rhs) {
+								// TODO Auto-generated method stub
+								return Integer.compare(rhs.getLength(), lhs.getLength());
+							}
+						});
+					}
+				
+			
 			}
 		});
 	

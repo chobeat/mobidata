@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.http.HttpResponse;
@@ -98,7 +100,6 @@ public class MainActivity extends Activity implements LocationListener{
 		currentPOISlider.setOnSeekBarChangeListener(new POISliderListener((TextView)this.findViewById(R.id.currentPOIValue)));
 
 		currentRangeSlider = (SeekBar) findViewById(R.id.RangeSlider);
-		
 		currentRangeSlider.setOnSeekBarChangeListener(new RangeSliderListener((TextView)this.findViewById(R.id.currentRangeValue)));
 
 		
@@ -217,9 +218,9 @@ public class MainActivity extends Activity implements LocationListener{
 		}
 		Spinner spCat = (Spinner) findViewById(R.id.catSpinner);
 		params.add(new BasicNameValuePair("cat",""+spCat.getSelectedItem()));
-		
+		Log.v("log","numero di poi "+currentPOISlider.getProgress()+POISliderListener.OFFSET);
 		params.add(new BasicNameValuePair("poiNR", ""+(currentPOISlider.getProgress()+POISliderListener.OFFSET)));
-		params.add(new BasicNameValuePair("range", ""+(currentRangeSlider.getProgress())));
+		params.add(new BasicNameValuePair("range", ""+(currentRangeSlider.getProgress()*100)));
 		
 		WebServiceTask wst = new WebServiceTask(WebServiceTask.POST_TASK, handler, this, "Downloading Routes...", params);
 
@@ -268,16 +269,13 @@ public class MainActivity extends Activity implements LocationListener{
 
 	private ArrayList<Route> responseToRouteList(String response) {
 		 ArrayList<Route> l= new ArrayList<Route>();
-		Log.v("log",response);
 		JSONArray jArray;
 		try {
 			jArray = new JSONArray(response);
 		
-		
 		// TODO: handle JSONexceptions
 
 		for (int n=0; n < jArray.length(); n++){
-			
 			JSONObject tmpObjRoute =  jArray.getJSONObject(n);
 			Route tmpRoute = new Route();
 			tmpRoute.setName("Route from "+tmpObjRoute.getString("start")+" to "+tmpObjRoute.getString("end"));
@@ -303,12 +301,11 @@ public class MainActivity extends Activity implements LocationListener{
 			RouteLVItem tmpRouteItem = new RouteLVItem(tmpRoute);
 			routeItemData[n] = tmpRouteItem;
 
-			Log.d("MainActivity - add poiItemData", "added poi " + n);
-
 		}
 
 		Intent showRouteList = new Intent(MainActivity.this, RoutesListActivity.class);
 		ArrayList<RouteLVItem> routeItemDataAL = new ArrayList<RouteLVItem>(Arrays.asList(routeItemData));
+		
 		showRouteList.putExtra("routeItemDataAL", routeItemDataAL);
 		
 		LatLng coord;
@@ -332,8 +329,7 @@ public class MainActivity extends Activity implements LocationListener{
 			PoiLVItem tmpPoiItem = new PoiLVItem(tmpPoi);
 			poiItemData[n] = tmpPoiItem;
 
-			Log.d("MainActivity - add poiItemData", "added poi " + n);
-
+			
 		}
 
 		// launch activity poi list

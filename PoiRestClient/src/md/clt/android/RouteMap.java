@@ -70,11 +70,10 @@ public class RouteMap extends FragmentActivity {
 	            
 	            category.setText(tokenizer.nextToken());
 	            address.setText(tokenizer.nextToken());
-	            
+	            v.setClickable(false);
 	            return v;
 	        }
 	    });
-		
 		// Sets a callback that's invoked when the camera changes.
 		pMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 
@@ -101,7 +100,6 @@ public class RouteMap extends FragmentActivity {
 		    		options.width(5);
 		    	
 					for(Poi p:pois){
-					Log.d("log",p.getName());
 					pMap.addMarker(new MarkerOptions()
 					.position(p.getLatLng())
 					.title(p.getName())

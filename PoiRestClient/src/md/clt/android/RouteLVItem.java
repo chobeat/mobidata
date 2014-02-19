@@ -8,14 +8,14 @@ public class RouteLVItem implements Serializable{
 	private Route route;
 	private int icon;
 	private String text;
-	private String length;
+	private int length;
 
-	private String popularity;
-	public String getPopularity() {
+	private int popularity;
+	public int getPopularity() {
 		return popularity;
 	}
 
-	public void setPopularity(String popularity) {
+	public void setPopularity(int popularity) {
 		this.popularity = popularity;
 	}
 
@@ -27,17 +27,17 @@ public class RouteLVItem implements Serializable{
 		super();
 		this.route = route;
 		this.text = route.getName();
-		this.length= ""+route.getLength();
-		this.popularity=""+route.getPopularity();
+		this.length= route.getLength().intValue();
+		this.popularity=route.getPopularity();
 		// TODO: set icon based on category
 		this.icon = R.drawable.ic_star;
 	}
 	
-	public String getLength() {
+	public int getLength() {
 		return length;
 	}
 
-	public void setLength(String length) {
+	public void setLength(int length) {
 		this.length = length;
 	}
 

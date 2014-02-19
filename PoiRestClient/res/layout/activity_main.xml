@@ -146,14 +146,15 @@
             android:id="@+id/RangeSlider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:max="25"
-            android:progress="5" />
+            android:max="50"
+           
+            android:progress="10" />
           
         <TextView
             android:id="@+id/currentRangeValue"
             android:layout_width="10sp"
             android:layout_height="wrap_content"
-            android:text="5"
+            android:text="1000"
             android:gravity="center" />
     </TableRow>
 

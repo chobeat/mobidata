@@ -46,8 +46,8 @@ public class RoutesLVAdapter extends ArrayAdapter<RouteLVItem>{
         RouteLVItem routeItem = data[position];
         holder.txtTitle.setText(routeItem.getText());
         holder.imgIcon.setImageResource(routeItem.getIcon());
-        holder.txtLength.setText(routeItem.getLength());
-        holder.txtPopularity.setText(routeItem.getPopularity());
+        holder.txtLength.setText(""+routeItem.getLength());
+        holder.txtPopularity.setText(""+routeItem.getPopularity());
         return row;
     }
    

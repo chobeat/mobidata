@@ -7,26 +7,58 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radioRoute">
+         
+     
     </ListView>
     <RadioGroup
         android:id="@+id/radioRoute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
  
-        <RadioButton
-            android:id="@+id/radioLength"
+            
+            
+             <TextView
+        android:id="@+id/my_always_visible_textview"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="@string/radio_length" />
+            <RadioButton
+            android:id="@+id/radioLengthUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_length" 
+            android:text="↑" 
             android:checked="true" />
  
-        <RadioButton
-            android:id="@+id/radioPopularity"
+                <RadioButton
+            android:id="@+id/radioLengthDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_popularity" />
+            android:text="↓" 
+            android:checked="true" />
  
+        
+      
+            
+             <TextView
+        android:id="@+id/my_always_visible_textview"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:text="@string/radio_popularity" />
+        <RadioButton
+            android:id="@+id/radioPopularityUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="↑" />
+        <RadioButton
+            android:id="@+id/radioPopularityDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="↓" />
+ 
+ 
+        
     </RadioGroup>
  
 
