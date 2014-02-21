@@ -92,8 +92,7 @@
             android:text="@string/categories"
             android:textSize="22sp" >
         </TextView>
-
-        <Spinner
+<!--   <Spinner
             android:id="@+id/catSpinner"
             style="@android:style/Theme.Light"
             android:layout_width="wrap_content"
@@ -101,7 +100,8 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:text="@string/categories"
-            android:textSize="33sp" />
+            android:textSize="33sp" /> -->
+      
     </TableRow>
 
     <TableRow>
@@ -169,6 +169,13 @@
             android:layout_height="wrap_content"
             android:onClick="retrieveCloseRoutes"
             android:text="@string/retrieve" />
+        
+         <Button
+            android:id="@+id/interestsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="launchInterests"
+            android:text="Manage Interests" />
         <!--
        <Button
             android:id="@+id/bn_map"
@@ -183,6 +190,9 @@
             android:onClick="showPOIMap"
             android:text="@string/showPOIMap" />
         -->
+
+       
+
     </TableRow>
 
 </TableLayout>

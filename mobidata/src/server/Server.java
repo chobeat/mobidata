@@ -18,15 +18,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.postgresql.Driver;
+import org.postgresql.util.PSQLException;
 
 import com.sun.org.glassfish.gmbal.ParameterNames;
 
 @Path("/")
 public class Server {
 	
-	
+	final int PSQL_QUERY=1;
+	final int PSQL_UPDATE=2;
 
-	private Response QueryToJSONResponse(String query){
+	private Response QueryToJSONResponse(String query,int type){
 		try {
 			 
 			Class.forName("org.postgresql.Driver");
@@ -46,11 +48,17 @@ public class Server {
 					"jdbc:postgresql://127.0.0.1:5432/mobidata?searchpath=POIs", "chobeat",
 					"q1w2e3");
 				PreparedStatement p = connection.prepareStatement(query);
-				  ResultSet rs = p. executeQuery();
-		        
-		         	
-		         return Response.ok(convertToJSON(rs)).build() ;
-		
+				ResultSet rs;
+				if(type==PSQL_QUERY) 
+				{rs = p. executeQuery();
+				return Response.ok(convertToJSON(rs)).build() ;
+				
+				}
+				else if (type==PSQL_UPDATE)
+					p.executeUpdate();
+				
+				return Response.ok().build();
+		         
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -61,6 +69,7 @@ public class Server {
 			return Response.ok("Fail").build();
 		}
 		
+		
 }
 	
 	@GET
@@ -69,8 +78,57 @@ public class Server {
 	public Response listCategories(){
 		String query="SELECT \"nomeMC\" from \"POIs\".\"MacroCategorie\"";
 		
-		return QueryToJSONResponse(query);
+		return QueryToJSONResponse(query,PSQL_QUERY);
 	}	
+
+	@POST
+	@Path("addinterest")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addInterest( MultivaluedMap<String, String> params){
+		String uid=params.getFirst("uid");
+		String interest=params.getFirst("interest");
+		String query="INSERT INTO \"Users\".interests(\n" + 
+				"            userid, interest)\n" + 
+				"    VALUES ('"+uid+"','"+interest+"')";
+		QueryToJSONResponse(query,PSQL_UPDATE);
+		query="select interest FROM \"Users\".interests"
+				+" WHERE userid='"+uid+"'";
+		
+
+		return QueryToJSONResponse(query,PSQL_QUERY);
+	}
+	
+	@GET
+	@Path("getinterests")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getInterests(@QueryParam(value = "uid") final String uid){
+		
+		String query="select interest FROM \"Users\".interests"
+			+" WHERE userid='"+uid+"'";
+
+		return QueryToJSONResponse(query,PSQL_QUERY);
+	}
+	
+	@POST
+	@Path("removeinterest")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response removeInterest( MultivaluedMap<String, String> params){
+		String uid=params.getFirst("uid");
+		String interest=params.getFirst("interest");
+		String query="DELETE FROM \"Users\".interests"
+			+" WHERE userid='"+uid+"' and interest='"+interest+"'";
+		QueryToJSONResponse(query,PSQL_UPDATE);
+		
+		query="select interest FROM \"Users\".interests"
+				+" WHERE userid='"+uid+"'";
+		
+
+		return QueryToJSONResponse(query,PSQL_QUERY);
+	}
+	
+	
 	@POST
 	@Path("closeRoutes")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -78,25 +136,25 @@ public class Server {
 	public Response listCloseRoutes( MultivaluedMap<String, String> params){
 		String lat=params.getFirst("lat");
 		String lng=params.getFirst("lng");
-		String category=params.getFirst("cat");
+		String userid=params.getFirst("userid");
 		String poiNR=params.getFirst("poiNR");
 		String range=params.getFirst("range");
 		String query="SELECT id,path_name[array_upper(path_name,1)] as end, path_name[array_lower(path_name,1)] as start, popularity, ST_Length(ST_Transform(ST_SetSRID(ST_GeometryFromText(shape),4326),26915)) as length " + 
 				" " + 
 				"FROM \"POIs\".\"routes2\" as r" +
-				" where current-time ST_Length(ST_Transform(ST_SetSRID(ST_GeometryFromText(shape),4326),26915))>0" +
+				" where ST_Length(ST_Transform(ST_SetSRID(ST_GeometryFromText(shape),4326),26915))>0" +
 				" and array_length(path,1)="+poiNR+
-				"(CASE WHEN start_time::time > localtime THEN start_time::time - localtime ELSE localtime - start_time::time END)<'1 hour'"+
+				"and (CASE WHEN start_time::time > localtime THEN start_time::time - localtime ELSE localtime - start_time::time END)<'1 hour'"+
 				" and ST_Contains(ST_Buffer(ST_Transform(ST_GeomFromText('POINT("+lng+" "+lat+")',4326),26915),"+range+"),ST_Transform(ST_SetSRID(ST_GeometryFromText(shape),4326),26915)) ";
-				if(!category.equals("None"))
-				{query+="and category=\'"+category+"\' ";
-				}		
+				query+=" and category IN (select interest from \"Users\".interests where userid=\'"+userid+"\') ";
+				;
+						
 				
 		
 		query+="order by popularity desc "
 		+"limit 5;";
 		System.out.println(query);
-		return QueryToJSONResponse(query);
+		return QueryToJSONResponse(query,PSQL_QUERY);
 	}
 	@POST
 	@Path("routeinfo")
@@ -109,8 +167,8 @@ public class Server {
 		String query="select * from (select unnest(path) as point from \"POIs\".routes2 where id="+id+")" +
 				"as route join \"POIs\".\"POIsManhattan\" on point=\"4sqExtended\"" +
 				";";
-				
-			return QueryToJSONResponse(query);
+
+		return QueryToJSONResponse(query,PSQL_QUERY);
 	}
 	public static String convertToJSON(ResultSet resultSet)
 			throws Exception {

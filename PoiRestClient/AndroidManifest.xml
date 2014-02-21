@@ -27,6 +27,7 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
     <application
         android:theme="@android:style/Theme.Light"
@@ -63,6 +64,10 @@
         <activity
             android:name="md.clt.android.RoutesListActivity"
             android:label="Routes list" >
+        </activity>
+         <activity
+            android:name="md.clt.android.InterestActivity"
+            android:label="Interest List" >
         </activity>
     </application>
 

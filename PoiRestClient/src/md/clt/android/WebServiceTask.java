@@ -167,6 +167,7 @@ public class WebServiceTask extends AsyncTask<String, Integer, String> {
 				HttpGet httpget = new HttpGet(url);
 				response = httpclient.execute(httpget);
 				break;
+				
 			}
 		} catch (Exception e) {
 

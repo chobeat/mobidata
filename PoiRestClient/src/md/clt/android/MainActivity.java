@@ -28,8 +28,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -73,6 +76,8 @@ public class MainActivity extends Activity implements LocationListener{
 	public Location location;
 	private SeekBar currentPOISlider;
 	private SeekBar currentRangeSlider;
+	public String userid;
+	private AccountManager mAccountManager;
 	 public static Context getContext() {
 	    	return instance;
 	    }
@@ -82,11 +87,8 @@ public class MainActivity extends Activity implements LocationListener{
 		super.onCreate(savedInstanceState);
 		instance=this;
 		setContentView(R.layout.activity_main);
-
-		WebServiceTask catRequest= new WebServiceTask(WebServiceTask.GET_TASK, "handleCategoriesResponse", this, "Downloading Categories"); 
-		catRequest.execute(new String[]{SERVICE_URL+"poi/categories"});
-		
-		
+		userid=getAccountNames()[0];
+	
 		latituteField = (TextView) findViewById(R.id.tvLatVal);
 		longitudeField = (TextView) findViewById(R.id.tvLonVal);
 		providerField = (TextView) findViewById(R.id.tvProvVal);
@@ -143,6 +145,17 @@ public class MainActivity extends Activity implements LocationListener{
 		}
 	}
 
+	private String[] getAccountNames() {
+	    mAccountManager = AccountManager.get(this);
+	    Account[] accounts = mAccountManager.getAccountsByType(
+	            GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+	    String[] names = new String[accounts.length];
+	    for (int i = 0; i < names.length; i++) {
+	        names[i] = accounts[i].name;
+	    }
+	    return names;
+	}
+	
 	public void showPOIMap(View vw){
 		callRetrieveCloseRoutes(vw, "handleRoutesMapResponse");
 	}
@@ -162,32 +175,6 @@ public class MainActivity extends Activity implements LocationListener{
 		
 	}
 	
-	public void handleCategoriesResponse(String response){
-		JSONArray jArray;
-		ArrayList<String> l= new ArrayList<String>();
-
-		l.add("None");
-		try {
-			jArray = new JSONArray(response);
-		
-		
-		// TODO: handle JSONexceptions
-
-		for (int n=0; n < jArray.length(); n++){
-			
-			JSONObject tmpObj =  jArray.getJSONObject(n);
-			
-			
-			l.add(tmpObj.getString("nomemc"));
-		}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Spinner spCat = (Spinner) findViewById(R.id.catSpinner);
-		ArrayAdapter<String> aa=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1 ,l);
-		spCat.setAdapter(aa);
-	}
 	
 	public void showMap(View vw){
 		callShowMap(new ArrayList<Poi>());
@@ -195,6 +182,12 @@ public class MainActivity extends Activity implements LocationListener{
 	public void handleRoutesMapResponse(String response){
 		callShowMap(POIResponseToPOIList(response));
 		
+	}
+	
+	public void launchInterests(View vw){
+		Intent intent= new Intent(this, InterestActivity.class);
+		intent.putExtra("userid", userid);
+		startActivity(intent);
 	}
 	
 	public void retrieveCloseRoutes(View vw){
@@ -216,9 +209,8 @@ public class MainActivity extends Activity implements LocationListener{
 			params.add(new BasicNameValuePair("lng",""+-73.99));
 			
 		}
-		Spinner spCat = (Spinner) findViewById(R.id.catSpinner);
-		params.add(new BasicNameValuePair("cat",""+spCat.getSelectedItem()));
-		Log.v("log","numero di poi "+currentPOISlider.getProgress()+POISliderListener.OFFSET);
+
+		params.add(new BasicNameValuePair("userid", ""+userid));
 		params.add(new BasicNameValuePair("poiNR", ""+(currentPOISlider.getProgress()+POISliderListener.OFFSET)));
 		params.add(new BasicNameValuePair("range", ""+(currentRangeSlider.getProgress()*100)));
 		

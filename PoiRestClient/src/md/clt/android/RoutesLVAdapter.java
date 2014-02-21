@@ -32,7 +32,6 @@ public class RoutesLVAdapter extends ArrayAdapter<RouteLVItem>{
             row = inflater.inflate(layoutResourceId, parent, false);
            
             holder = new RouteLVItemHolder();
-            holder.imgIcon = (ImageView)row.findViewById(R.id.imgIcon);
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
             holder.txtPopularity = (TextView)row.findViewById(R.id.txtPopularity);
             holder.txtLength = (TextView)row.findViewById(R.id.txtLength);
@@ -45,7 +44,6 @@ public class RoutesLVAdapter extends ArrayAdapter<RouteLVItem>{
         }       
         RouteLVItem routeItem = data[position];
         holder.txtTitle.setText(routeItem.getText());
-        holder.imgIcon.setImageResource(routeItem.getIcon());
         holder.txtLength.setText(""+routeItem.getLength());
         holder.txtPopularity.setText(""+routeItem.getPopularity());
         return row;
