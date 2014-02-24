@@ -176,6 +176,13 @@
             android:layout_height="wrap_content"
             android:onClick="launchInterests"
             android:text="Manage Interests" />
+         
+         <Button
+            android:id="@+id/favouritesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="launchFavorites"
+            android:text="Manage Favourites" />
         <!--
        <Button
             android:id="@+id/bn_map"

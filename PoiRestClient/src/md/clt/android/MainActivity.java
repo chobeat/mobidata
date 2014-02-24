@@ -1,33 +1,29 @@
 package md.clt.android;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.locks.Lock;
+import java.util.List;
 
-import org.apache.http.HttpResponse;
+import md.clt.android.POI.POISliderListener;
+import md.clt.android.POI.Poi;
+import md.clt.android.POI.PoiLVItem;
+import md.clt.android.POI.PoiListActivity;
+import md.clt.android.POI.PoiMap;
+import md.clt.android.routes.Route;
+import md.clt.android.routes.RouteLVItem;
+import md.clt.android.routes.RoutesListActivity;
+
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.db4o.Db4oEmbedded;
+import com.db4o.EmbeddedObjectContainer;
+import com.db4o.config.EmbeddedConfiguration;
+import com.db4o.internal.config.EmbeddedConfigurationImpl;
+import com.db4o.query.Predicate;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -35,7 +31,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,20 +38,14 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 /* 
  * @@@lez3 - we want our activity to listen for location changes;
  * so we need to implement the LocationListener interface (an interface 
@@ -94,16 +83,15 @@ public class MainActivity extends Activity implements LocationListener{
 		providerField = (TextView) findViewById(R.id.tvProvVal);
 		// Get the location manager
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
 		
-
 		currentPOISlider = (SeekBar) findViewById(R.id.PoiSlider);
 		
 		currentPOISlider.setOnSeekBarChangeListener(new POISliderListener((TextView)this.findViewById(R.id.currentPOIValue)));
 
 		currentRangeSlider = (SeekBar) findViewById(R.id.RangeSlider);
 		currentRangeSlider.setOnSeekBarChangeListener(new RangeSliderListener((TextView)this.findViewById(R.id.currentRangeValue)));
-
+		
+		
 		
 		// get the value of askedGps from the last saved instance of the activity
 		//if (savedInstanceState.containsKey("asked_gps")) askedGps = savedInstanceState.getBoolean("asked_gps");
@@ -253,6 +241,28 @@ public class MainActivity extends Activity implements LocationListener{
 			return routeArrayList;
 	}
 
+	public void launchFavorites(View vw){
+		EmbeddedObjectContainer db= Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),
+				Environment.getExternalStorageDirectory().getPath()
+				+ "/RouteFinder");
+		
+		try{
+			List<Route> l=db.query( new Predicate<Route>() {
+
+				@Override
+				public boolean match(Route arg0) {
+					// TODO Auto-generated method stub
+					return true;
+				}
+			});
+			updateRoutesList(l);
+		}
+		finally{
+			db.close();
+			
+		}
+	}
+	
 	public void handleRoutesResponse(String response) {
 			
 			updateRoutesList(responseToRouteList(response));
@@ -283,7 +293,7 @@ public class MainActivity extends Activity implements LocationListener{
 		return l;
 	}
 
-	private void updateRoutesList(ArrayList<Route> routeArrayList){
+	private void updateRoutesList(List<Route> routeArrayList){
 		
 		RouteLVItem routeItemData[] = new RouteLVItem[routeArrayList.size()];
 
@@ -310,37 +320,6 @@ public class MainActivity extends Activity implements LocationListener{
 		
 		this.startActivity(showRouteList);
 	}
-
-	private void updatePoiList(ArrayList<Poi> routeArrayList){
-
-		PoiLVItem poiItemData[] = new PoiLVItem[routeArrayList.size()];
-
-		for (int n=0; n < routeArrayList.size(); n++){
-			Poi tmpPoi = routeArrayList.get(n);
-
-			PoiLVItem tmpPoiItem = new PoiLVItem(tmpPoi);
-			poiItemData[n] = tmpPoiItem;
-
-			
-		}
-
-		// launch activity poi list
-		Intent showPoiList = new Intent(MainActivity.this, PoiListActivity.class);
-		// pass poi items for filling the list
-		ArrayList<PoiLVItem> poiItemDataAL = new ArrayList<PoiLVItem>(Arrays.asList(poiItemData));
-		showPoiList.putExtra("poiItemDataAL", poiItemDataAL);
-		
-		LatLng coord;
-		if (location != null){
-			coord = new LatLng(location.getLatitude(), location.getLongitude());
-		}else{
-			coord = new LatLng(40.73, -73.99);
-		}
-		showPoiList.putExtra("coord", coord);
-		
-		this.startActivity(showPoiList);
-	}
-
 
 	public void hideKeyboard() {
 
