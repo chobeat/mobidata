@@ -91,9 +91,6 @@ public class InterestActivity extends Activity {
 		
 	}
 	
-	public void handleInterestAddedResponse(String response){
-		Log.v("interest",response);
-	}
 	
 	public void addInterestButtonClicked(View vw){
 		ArrayList<NameValuePair> params=new ArrayList<NameValuePair>();

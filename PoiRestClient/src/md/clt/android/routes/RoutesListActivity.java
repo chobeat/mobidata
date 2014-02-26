@@ -151,7 +151,6 @@ public class RoutesListActivity extends ListActivity{
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", routeItem.getRoute().getId()));
 		String URL = MainActivity.SERVICE_URL + "poi/routeinfo";
-		Log.v("route","aeeeeeeeee");
 		WebServiceTask tsk = new WebServiceTask(WebServiceTask.POST_TASK,
 				"handleRouteInfo", v.getContext(), "Downloading Route Info",
 				params);

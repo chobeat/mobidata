@@ -71,7 +71,17 @@ public class Server {
 		
 		
 }
-	
+	@GET
+	@Path("route/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response routeById(@PathParam("id") final String routeID){
+		System.out.println(routeID);
+		String query="select * from (select unnest(path) as point from \"POIs\".routes2 where id="+routeID+")" +
+				"as route join \"POIs\".\"POIsManhattan\" on point=\"4sqExtended\"" +
+				";";
+
+		return QueryToJSONResponse(query,PSQL_QUERY);
+	}	
 	@GET
 	@Path("categories")
 	@Produces(MediaType.APPLICATION_JSON)

@@ -9,6 +9,7 @@ import com.db4o.query.Predicate;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,15 +90,7 @@ public class RoutesLVAdapter extends ArrayAdapter<RouteLVItem> {
 		}
 		Button shareButton = (Button) row.findViewById(R.id.routesharebutton);
 
-		shareButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
+		shareButton.setOnClickListener(new ShareListener(routeItem.getRoute(),this.getContext()));
 		return row;
 	}
 
@@ -198,5 +191,23 @@ public class RoutesLVAdapter extends ArrayAdapter<RouteLVItem> {
 			
 		
 	}
+	 class ShareListener implements OnClickListener{
+		 	Route r;
+		 	Context c;
+		 	public ShareListener(Route r,Context c){
+		 		this.r=r;
+		 		this.c=c;
+		 	}
+			@Override
+			public void onClick(View arg0) {
+				Intent intent=new Intent(android.content.Intent.ACTION_SEND);
+				intent.setType("text/plain");
+
+				// Add data to the intent, the receiving app will decide what to do with it.
+				intent.putExtra(Intent.EXTRA_TEXT, "http://routefinder.com/route/"+this.r.getId());
+				c.startActivity(Intent.createChooser(intent, "Share via"));
+			}
+
+		}
 	
 }

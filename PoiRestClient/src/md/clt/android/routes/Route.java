@@ -50,26 +50,12 @@ public class Route implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
-    /*public String getCategory() {
-        return category;
-    }
-    public void setCategory(String category) {
-        this.category = category;
-    }*/
-     
     public Route(String id, String name, String category,List<Poi> path) {
    	    this.id = id;
         this.name = name;
-     //   this.category = category;
         this.path=path;
     }
      
-    public Route(String id, String name, String category) {	 
-        this.id = id;
-        this.name = name;
-       // this.category = category;
-       
-    }
       
     public Route() {
         this.id = "-1";
