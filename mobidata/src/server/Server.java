@@ -99,24 +99,24 @@ public class Server {
 		String uid=params.getFirst("uid");
 		String interest=params.getFirst("interest");
 		String query="INSERT INTO \"Users\".interests(\n" + 
-				"            userid, interest)\n" + 
-				"    VALUES ('"+uid+"','"+interest+"')";
+				"            userid, interest,valid,time)"+
+				"    VALUES ('"+uid+"',	'"+interest+"',true,now())";
 		QueryToJSONResponse(query,PSQL_UPDATE);
-		query="select interest FROM \"Users\".interests"
-				+" WHERE userid='"+uid+"'";
+
+		query="select unnest(interests) as interest from \"Users\".get_interests('"+uid+"') as interests";
 		
 
 		return QueryToJSONResponse(query,PSQL_QUERY);
 	}
 	
+
 	@GET
 	@Path("getinterests")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getInterests(@QueryParam(value = "uid") final String uid){
 		
-		String query="select interest FROM \"Users\".interests"
-			+" WHERE userid='"+uid+"'";
-
+		String query="select unnest(interests) as interest from \"Users\".get_interests('"+uid+"') as interests";
+		System.out.println(query);
 		return QueryToJSONResponse(query,PSQL_QUERY);
 	}
 	
@@ -127,13 +127,12 @@ public class Server {
 	public Response removeInterest( MultivaluedMap<String, String> params){
 		String uid=params.getFirst("uid");
 		String interest=params.getFirst("interest");
-		String query="DELETE FROM \"Users\".interests"
-			+" WHERE userid='"+uid+"' and interest='"+interest+"'";
+		String query="INSERT INTO \"Users\".interests(\n" + 
+						"            userid, interest,valid,time)\n" + 
+						"    VALUES ('"+uid+"','"+interest+"',false,now())";
 		QueryToJSONResponse(query,PSQL_UPDATE);
 		
-		query="select interest FROM \"Users\".interests"
-				+" WHERE userid='"+uid+"'";
-		
+		query="select unnest(interests) as interest from \"Users\".get_interests('"+uid+"') as interests";
 
 		return QueryToJSONResponse(query,PSQL_QUERY);
 	}
@@ -156,7 +155,7 @@ public class Server {
 				" and array_length(path,1)="+poiNR+
 				"and (CASE WHEN start_time::time > localtime THEN start_time::time - localtime ELSE localtime - start_time::time END)<'1 hour'"+
 				" and ST_Contains(ST_Buffer(ST_Transform(ST_GeomFromText('POINT("+lng+" "+lat+")',4326),26915),"+range+"),ST_Transform(ST_SetSRID(ST_GeometryFromText(shape),4326),26915)) ";
-				query+=" and category IN (select interest from \"Users\".interests where userid=\'"+userid+"\') ";
+				query+=" and category IN (select unnest(interests) from \"Users\".get_interests('"+userid+"') as interests)"
 				;
 						
 				
